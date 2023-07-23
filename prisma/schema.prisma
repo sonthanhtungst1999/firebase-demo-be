@@ -1,0 +1,76 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id                    Int               @default(autoincrement()) @id
+  email                 String            @unique
+  firstName             String?
+  lastName              String?
+
+  NotificationTokens    NotificationToken[]
+}
+
+model Notification {
+  id                      Int                 @default(autoincrement()) @id
+
+  isActive                Boolean             @default(true)
+  title                   String
+  body                    String?
+
+  notificationTokenId     Int
+  notificationToken       NotificationToken   @relation(fields: [notificationTokenId], references: [id])  
+}
+
+model NotificationToken {
+  id                      Int                 @default(autoincrement()) @id
+
+  isActive                Boolean             @default(true)
+  notificationToken       String
+  device_type             String
+  userId                  Int
+  user                    User                @relation(fields: [userId], references: [id])
+  notifications           Notification[]
+
+}
+
+// model UserDevice {
+//   id              Int               @default(autoincrement()) @id
+//   name            String?
+//   token           String
+
+//   userId          Int
+//   user            User              @relation(fields: [userId], references: [id])
+//   topicId         Int?
+//   firebaseTopic   FirebaseTopic?    @relation(fields: [topicId], references: [id])
+//   groupId         Int?
+//   firebaseGroup   FirebaseGroup?    @relation(fields: [groupId], references: [id])
+// }
+
+// model FirebaseNotification {
+//   id              Int               @default(autoincrement()) @id
+//   isActive        Boolean           @default(false)
+//   topics          FirebaseTopic[]
+//   groups          FirebaseGroup[]
+// }
+
+// model FirebaseTopic {
+//   id                          Int                     @default(autoincrement()) @id
+//   name                        String                  @unique
+//   userDevices                 UserDevice[]
+//   firebaseNotificationId      Int
+//   firebaseNotification        FirebaseNotification    @relation(fields: [firebaseNotificationId], references: [id])
+// }
+
+// model FirebaseGroup {
+//   id                          Int                     @default(autoincrement()) @id
+//   name                        String                  @unique
+//   userDevices                 UserDevice[]
+//   firebaseNotificationId      Int
+//   firebaseNotification        FirebaseNotification    @relation(fields: [firebaseNotificationId], references: [id])
+// }
